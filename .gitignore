@@ -1,0 +1,73 @@
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+*.sw[p-z]
+*~
+.DS_Store
+.classpath
+.project
+.settings/
+.c9/
+*.sublime-workspace
+*.sublime-project
+
+# Test
+.kotest/
+test-output/
+tests.log
+
+# OS
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# IDE Caches
+out/
+*.class
+*.ctxt
+.mtj.tmp/
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Kotlin/JVM
+*.jks
+*.jceks
+*.keystore
+
+# Credentials & Environment
+.env
+.env.local
+.env.*.local
+credentials.json
+secrets.json
+local.properties
+
+# Build outputs
+/bin/
+/dist/
+target/
+
+# Testing
+/test-results/
+coverage/
+.coverage
+htmlcov/

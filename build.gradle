@@ -1,0 +1,113 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.2.0'
+    id 'maven-publish'
+    id 'java-library'
+    id 'signing'
+}
+
+group = 'com.astrologyapi'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+kotlin {
+    compilerOptions {
+        // JVM 8 ensures compatibility with Android API 21+ and Server JVM 8+.
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        freeCompilerArgs.add('-Xjsr305=strict')
+    }
+}
+
+dependencies {
+    api 'com.squareup.okhttp3:okhttp:4.12.0'
+    api 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0'
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-reflect'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// Kotlin compiler daemon can't parse bare "25" java.version — pass dotted form.
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile).configureEach {
+    kotlinDaemonJvmArguments.set(["-Xmx2g", "-Djava.version=25.0.0"])
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
+}
+
+tasks.register('qaCatalog', JavaExec) {
+    group = 'verification'
+    description = 'Builds the Kotlin SDK inventory and writes catalog/coverage artifacts under testing/.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.astrologyapi.sdk.testing.QaCatalogMainKt'
+}
+
+tasks.register('qaSdk', JavaExec) {
+    group = 'verification'
+    description = 'Runs the deterministic Kotlin SDK QA sweep and writes markdown reports under testing/.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.astrologyapi.sdk.testing.QaSdkMainKt'
+}
+
+tasks.register('qaCompare', JavaExec) {
+    group = 'verification'
+    description = 'Runs randomized Kotlin SDK-vs-direct comparisons and writes inconsistent response reports under testing/.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.astrologyapi.sdk.testing.QaCompareMainKt'
+}
+
+tasks.register('qaSingle', JavaExec) {
+    group = 'verification'
+    description = 'Runs the Kotlin single-endpoint debug runner.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.astrologyapi.sdk.testing.QaSingleMainKt'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'AstrologyAPI Kotlin SDK'
+                description = 'Official Kotlin/Android SDK for AstrologyAPI.com'
+                url = 'https://github.com/astrologyapi/astrologyapi-kotlin'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'astrologyapi'
+                        name = 'AstrologyAPI'
+                        email = 'support@astrologyapi.com'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/astrologyapi/astrologyapi-kotlin'
+                }
+            }
+        }
+    }
+}

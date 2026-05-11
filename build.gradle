@@ -48,34 +48,6 @@ tasks.test {
     }
 }
 
-tasks.register('qaCatalog', JavaExec) {
-    group = 'verification'
-    description = 'Builds the Kotlin SDK inventory and writes catalog/coverage artifacts under testing/.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.astrologyapi.sdk.testing.QaCatalogMainKt'
-}
-
-tasks.register('qaSdk', JavaExec) {
-    group = 'verification'
-    description = 'Runs the deterministic Kotlin SDK QA sweep and writes markdown reports under testing/.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.astrologyapi.sdk.testing.QaSdkMainKt'
-}
-
-tasks.register('qaCompare', JavaExec) {
-    group = 'verification'
-    description = 'Runs randomized Kotlin SDK-vs-direct comparisons and writes inconsistent response reports under testing/.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.astrologyapi.sdk.testing.QaCompareMainKt'
-}
-
-tasks.register('qaSingle', JavaExec) {
-    group = 'verification'
-    description = 'Runs the Kotlin single-endpoint debug runner.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.astrologyapi.sdk.testing.QaSingleMainKt'
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -105,9 +77,15 @@ publishing {
                     }
                 }
                 scm {
-                    url = 'https://github.com/astrologyapi/astrologyapi-kotlin'
+                    connection = 'scm:git:git://github.com/astrologyapi/astro-api-kotlin.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/astrologyapi/astro-api-kotlin.git'
+                    url = 'https://github.com/astrologyapi/astro-api-kotlin'
                 }
             }
         }
     }
+}
+
+signing {
+    sign(publishing.publications.maven)
 }
